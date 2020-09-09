@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "ImageWrapper.h"
+//#include "ImageWrapper.h"
 #include "RtsFunctions.generated.h"
 
 UCLASS()

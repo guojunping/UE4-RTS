@@ -1,31 +1,35 @@
 #include "RTS.h"
+//#include "ImageWrapper.h"
+//Runtime/ImageWrapper/Public/IImageWrapperModule.h #include "IImageWrapperModule.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
 #include "RtsFunctions.h"
 
 void URtsFunctions::WriteBinaryFile(TArray<uint8> data, FString file, bool & Success) {
-	Success = FFileHelper::SaveArrayToFile(data, *(FPaths::GameDir() + file));
+	Success = FFileHelper::SaveArrayToFile(data, *(FPaths::ProjectDir() + file));
 }
 
 void URtsFunctions::ReadBinaryFile(FString file, TArray<uint8>& bytes, bool & Success) {
-	Success = FFileHelper::LoadFileToArray(bytes, *(FPaths::GameDir() + file));
+	Success = FFileHelper::LoadFileToArray(bytes, *(FPaths::ProjectDir() + file));
 }
 
 void URtsFunctions::WriteStringToFile(FString i,FString file,bool & Success) {
-	Success = FFileHelper::SaveStringToFile(i, *(FPaths::GameDir() + file));
+	Success = FFileHelper::SaveStringToFile(i, *(FPaths::ProjectDir() + file));
 }
 
 void URtsFunctions::ReadStringFromFile(FString file,FString &string) {
-	FFileHelper::LoadFileToString(string, *(FPaths::GameDir() + file));
+	FFileHelper::LoadFileToString(string, *(FPaths::ProjectDir() + file));
 }
 
 //Reading pngs
 void URtsFunctions::ReadPNGRaw(FString file, TArray<uint8>& Data, int32 &Width, int32 &Height) {
-	FString Path = FPaths::GameDir() + file;
+	FString Path = FPaths::ProjectDir() + file;
 
 	UTexture2D* LoadedT2D = NULL;
 
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
 
 	TArray<uint8> RawFileData;
 	if (!FFileHelper::LoadFileToArray(RawFileData, *Path))
@@ -54,7 +58,7 @@ void URtsFunctions::ReadPNGRaw(FString file, TArray<uint8>& Data, int32 &Width, 
 }
 
 UTexture2D* URtsFunctions::ReadPNGFile(FString file) {
-	FString Path = FPaths::GameDir() + file;
+	FString Path = FPaths::ProjectDir() + file;
 
 	if (!FPaths::FileExists(Path))return NULL;
 
@@ -62,7 +66,7 @@ UTexture2D* URtsFunctions::ReadPNGFile(FString file) {
 
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
 
 	TArray<uint8> RawFileData;
 	if (!FFileHelper::LoadFileToArray(RawFileData, *Path))
@@ -103,7 +107,7 @@ TArray<FString> URtsFunctions::FindAllFilesInDirectory(FString p,FString filenam
 	else
 		filename = (filename.Left(1) == ".") ? "*" + filename : "*." + filename;
 
-	FString Path = FPaths::GameDir() + p + filename;
+	FString Path = FPaths::ProjectDir() + p + filename;
 	
 	IFileManager& FileManager = IFileManager::Get();
 
